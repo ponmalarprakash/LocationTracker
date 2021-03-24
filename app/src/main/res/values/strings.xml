@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Location Tracker</string>
+    <string name="userId">Enter UserId</string>
+    <string name="stopTracker">Stop Tracker</string>
+    <string name="submitTracker"><![CDATA[Submit & Start Tracker]]></string>
+    <string name="startTracker">Start Tracker</string>
+    <string name="currentUserId">"Current UserId is : "</string>
+    <string name="enterId">Kindly enter UserId</string>
+    <string name="permissionDenied">Permission Denied</string>
+</resources>
