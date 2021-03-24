@@ -34,6 +34,8 @@ public class CommonData {
     public static final String ACCESS_KEY = "access_keyu";
     public static final String TIMEZONE = "timezone";
     public static final String USER_ID="user_id";
+    public static final String SHIFT_STATUS="shift_status";
+    public static final String LOG_IN_STATUS="log_in_status";
     public static final String SHOW_CANCEL_BUTTON = "driver_noshow_time";
     public static final String DRIVER_ARRIVED_TIME = "driver_arrived_time";
     public static final String FIREBASE_KEY = "firebase_token";

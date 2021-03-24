@@ -13,6 +13,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.example.deviceinformation.R
 import com.example.deviceinformation.common.CommonData
 import com.example.deviceinformation.service.LocationService
@@ -26,6 +27,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var btnStopService: Button
     private lateinit var etUserId: EditText
     private lateinit var tvUserId: TextView
+    private lateinit var btnShiftStatus: Button
+    private lateinit var btnLogInOut: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,18 +37,24 @@ class MainActivity : AppCompatActivity() {
         btnStopService = findViewById(R.id.stop)
         etUserId = findViewById(R.id.et_user_id)
         tvUserId = findViewById(R.id.tv_user_id)
+        btnShiftStatus = findViewById(R.id.btnShiftInOut)
+        btnLogInOut = findViewById(R.id.btnLogInOut)
 
         checkSession()
     }
 
     private fun checkSession() {
         if (SessionSave.getUserId(CommonData.USER_ID, this).isEmpty()) {
-            etUserId.visibility = View.VISIBLE
-            tvUserId.visibility = View.GONE
-            btnStartService.text = getString(R.string.submitTracker)
+            showEditUserId()
         } else {
             showUserId()
         }
+    }
+
+    private fun showEditUserId() {
+        etUserId.visibility = View.VISIBLE
+        tvUserId.visibility = View.GONE
+        btnStartService.text = getString(R.string.submitTracker)
     }
 
     @SuppressLint("SetTextI18n")
@@ -55,12 +64,10 @@ class MainActivity : AppCompatActivity() {
         btnStartService.text = getString(R.string.startTracker)
         tvUserId.text =
             getString(R.string.currentUserId) + SessionSave.getUserId(CommonData.USER_ID, this)
-
     }
 
     override fun onResume() {
         super.onResume()
-
         btnStartService.setOnClickListener {
             if (etUserId.visibility == View.VISIBLE) {
                 val userId = etUserId.text.toString()
@@ -77,6 +84,88 @@ class MainActivity : AppCompatActivity() {
 
         btnStopService.setOnClickListener {
             stopForegroundServices()
+        }
+
+        if (SessionSave.getShiftStatus(CommonData.SHIFT_STATUS, this)
+                .isEmpty() || SessionSave.getShiftStatus(
+                CommonData.SHIFT_STATUS,
+                this
+            ) == "out"
+        ) {
+            btnShiftStatus.setBackgroundColor(
+                ContextCompat.getColor(this, R.color.purple_500)
+            )
+            btnShiftStatus.text = getString(R.string.shiftOut)
+
+        } else {
+            btnShiftStatus.setBackgroundColor(
+                ContextCompat.getColor(this, R.color.teal_200)
+            )
+            btnShiftStatus.text = getString(R.string.shiftIn)
+        }
+
+        btnShiftStatus.setOnClickListener {
+            if (SessionSave.getShiftStatus(CommonData.SHIFT_STATUS, this)
+                    .isEmpty() || SessionSave.getShiftStatus(
+                    CommonData.SHIFT_STATUS,
+                    this
+                ) == "out"
+            ) {
+                btnShiftStatus.setBackgroundColor(
+                    ContextCompat.getColor(this, R.color.teal_200)
+                )
+                btnShiftStatus.text = getString(R.string.shiftIn)
+                SessionSave.saveShiftStatus(
+                    CommonData.SHIFT_STATUS,
+                    "in",
+                    this
+                )
+            } else {
+                btnShiftStatus.setBackgroundColor(
+                    ContextCompat.getColor(this, R.color.purple_500)
+                )
+                btnShiftStatus.text = getString(R.string.shiftOut)
+                SessionSave.saveShiftStatus(
+                    CommonData.SHIFT_STATUS,
+                    "out",
+                    this
+                )
+            }
+        }
+
+        if (SessionSave.getUserId(CommonData.USER_ID, this).isEmpty()) {
+            btnLogInOut.setBackgroundColor(
+                ContextCompat.getColor(this, R.color.purple_500)
+            )
+            btnLogInOut.text = getString(R.string.logOut)
+        } else {
+            btnLogInOut.setBackgroundColor(
+                ContextCompat.getColor(this, R.color.teal_200)
+            )
+            btnLogInOut.text = getString(R.string.logIn)
+        }
+
+        btnLogInOut.setOnClickListener {
+            if (SessionSave.getUserId(CommonData.USER_ID, this).isEmpty()) {
+                val userId = etUserId.text.toString()
+                if (userId.isEmpty()) {
+                    showToast(getString(R.string.enterId))
+                } else {
+                    SessionSave.saveUserId(CommonData.USER_ID, userId, this)
+                    showUserId()
+                    btnLogInOut.setBackgroundColor(
+                        ContextCompat.getColor(this, R.color.teal_200)
+                    )
+                    btnLogInOut.text = getString(R.string.logIn)
+                }
+            } else {
+                btnLogInOut.setBackgroundColor(
+                    ContextCompat.getColor(this, R.color.purple_500)
+                )
+                btnLogInOut.text = getString(R.string.logOut)
+                SessionSave.saveUserId(CommonData.USER_ID, "", this)
+                showEditUserId()
+            }
         }
     }
 

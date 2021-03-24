@@ -129,6 +129,24 @@ public class SessionSave {
         return "";
     }
 
+
+    public static void saveShiftStatus(String key, String value, Context context) {
+        if (context != null) {
+            Editor editor = context.getSharedPreferences("KEY", Activity.MODE_PRIVATE).edit();
+            editor.putString(key, value);
+            editor.commit();
+        }
+        return;
+    }
+
+    public static String getShiftStatus(String key, Context context) {
+        if (context != null) {
+            SharedPreferences prefs = context.getSharedPreferences("KEY", Activity.MODE_PRIVATE);
+            return prefs.getString(key, "");
+        }
+        return "";
+    }
+
 //    public static void saveGoogleWaypoints(LatLng start, LatLng dest, String source, double dist, String error, Context mContext) {
 //
 //
