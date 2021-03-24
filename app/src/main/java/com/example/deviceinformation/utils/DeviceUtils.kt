@@ -16,8 +16,8 @@ import android.telephony.SubscriptionManager
 import android.telephony.TelephonyManager
 import androidx.core.content.ContextCompat
 import com.example.deviceinformation.BuildConfig
-import com.example.deviceinformation.data.DeviceInfo
 import com.example.deviceinformation.common.CommonData
+import com.example.deviceinformation.data.DeviceInfo
 import com.google.android.gms.common.GoogleApiAvailability
 import java.io.File
 import java.text.DecimalFormat
@@ -54,12 +54,12 @@ object DeviceUtils {
                 deviceToken = SessionSave.getSession(CommonData.DEVICE_TOKEN, context),
                 deviceId = getDeviceID(context),
                 internetSpeed = InternetSpeedChecker.getDownloadSpeed(),
-                location?.latitude ?: 0.0,
-                location?.longitude ?: 0.0,
-                location?.altitude ?: 0.0,
-                location?.bearing?.toInt() ?: 0,
-                location?.speed?.toString() ?: "0.0",
-                location?.accuracy?.toDouble() ?: 0.0,
+                getLatitude(location),
+                getLongitude(location),
+                getAltitudeValue(location),
+                getBearing(location),
+                getSpeed(location),
+                getAccuracy(location),
                 SessionSave.getSession(CommonData.USER_ID, context).toInt()
             )
             return deviceInfo
@@ -68,13 +68,54 @@ object DeviceUtils {
         }
     }
 
-    /*private fun getAccuracy(location: Location?): String {
+    private fun getLatitude(location: Location?): Double {
         return if (location != null) {
-            location.latitude.toString()
+            DecimalFormat("##.###").format(location.latitude).toDouble()
+        } else {
+            0.0
+        }
+    }
+
+    private fun getLongitude(location: Location?): Double {
+        return if (location != null) {
+            DecimalFormat("##.###").format(location.longitude).toDouble()
+        } else {
+            0.0
+        }
+    }
+
+    private fun getAltitudeValue(location: Location?): Double {
+        return if (location != null) {
+            DecimalFormat("##.###").format(location.altitude).toDouble()
+        } else {
+            0.0
+        }
+    }
+
+    private fun getBearing(location: Location?): Int {
+        return if (location != null) {
+            DecimalFormat("##.###").format(location.bearing).toInt()
+        } else {
+            0
+        }
+    }
+
+    private fun getSpeed(location: Location?): String {
+        return if (location != null) {
+            DecimalFormat("##.###").format(location.speed).toString()
         } else {
             "0.0"
         }
-    }*/
+    }
+
+    private fun getAccuracy(location: Location?): Double {
+        return if (location != null) {
+            DecimalFormat("##.###").format(location.accuracy).toDouble()
+        } else {
+            0.0
+        }
+    }
+
 
     private fun getDeviceID(context: Context) =
         Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID)
