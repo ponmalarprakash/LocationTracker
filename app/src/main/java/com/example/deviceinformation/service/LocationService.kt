@@ -1,30 +1,27 @@
 package com.example.deviceinformation.service
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.app.*
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.location.Location
 import android.os.Build
 import android.os.IBinder
 import android.os.Looper
 import android.util.Log
-import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
-import androidx.core.content.ContextCompat
+import com.example.deviceinformation.R
 import com.example.deviceinformation.api.ServiceGenerator
-import com.example.deviceinformation.data.DetailInfo
 import com.example.deviceinformation.data.DeviceInfoResponse
 import com.example.deviceinformation.utils.DeviceUtils
 import com.example.deviceinformation.view.MainActivity
 import com.google.android.gms.location.*
-import com.google.gson.Gson
 import retrofit2.Call
-import java.util.*
 import retrofit2.Callback
 import retrofit2.Response
+import java.util.*
 
 
 const val CHANNEL_ID = "Foreground_Service"
@@ -98,7 +95,7 @@ class LocationService : Service() {
         fusedLocationClient.requestLocationUpdates(
             locationRequest,
             mLocationCallback,
-            Looper.myLooper()
+            Looper.getMainLooper()
         )
     }
 
@@ -118,9 +115,12 @@ class LocationService : Service() {
         val pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0)
 
         val notification = NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle("Foreground Notification")
-            .setContentText("Location Tracker")
+            .setContentText(getString(R.string.app_running))
+            .setContentTitle(getString(R.string.app_name))
             .setContentIntent(pendingIntent)
+            .setOngoing(true)
+            .setSmallIcon(R.drawable.ic_launcher)
+            .setWhen(System.currentTimeMillis())
             .build()
         startForeground(474, notification)
         return START_STICKY
@@ -148,5 +148,48 @@ class LocationService : Service() {
             )
             manager.createNotificationChannel(serviceChannel)
         }
+    }
+
+    private fun getNotification(): Notification {
+        val activityPendingIntent = PendingIntent.getActivity(
+            this, 0, Intent(
+                this,
+                MainActivity::class.java
+            ), 0
+        )
+        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        val notifyId = 10
+        val notification: Notification
+        var builder: Notification.Builder? = null
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val notificationChannel = NotificationChannel(
+                CHANNEL_ID,
+                "My Notifications",
+                NotificationManager.IMPORTANCE_HIGH
+            )
+            // Configure the notification channel.
+            notificationChannel.description = "Channel description"
+            notificationChannel.enableLights(true)
+            notificationChannel.lightColor = Color.RED
+            notificationManager.createNotificationChannel(notificationChannel)
+            builder = Notification.Builder(this, CHANNEL_ID)
+                .setContentText(getString(R.string.app_running))
+                .setContentTitle(getString(R.string.app_name))
+                .setOngoing(true)
+                .setSmallIcon(R.drawable.ic_launcher)
+                .setWhen(System.currentTimeMillis())
+        } else {
+            builder = Notification.Builder(this)
+                .setContentText(getString(R.string.app_running))
+                .setContentTitle(getString(R.string.app_name))
+                .setOngoing(true)
+                .setPriority(Notification.PRIORITY_HIGH)
+                .setSmallIcon(R.drawable.ic_launcher)
+                .setWhen(System.currentTimeMillis())
+        }
+
+        notification = builder.build()
+//        notificationManager.notify(notifyId, notification)
+        return notification
     }
 }

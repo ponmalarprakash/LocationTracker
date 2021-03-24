@@ -11,7 +11,6 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.example.deviceinformation.R
@@ -84,7 +83,9 @@ class MainActivity : AppCompatActivity() {
     private fun startForegroundServices() {
         if (checkLocationPermission()) {
             val myServiceIntent = Intent(this, LocationService::class.java)
-            startService(myServiceIntent)
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O)
+                startForegroundService(myServiceIntent)
+            else startService(myServiceIntent)
             showUserId()
         }
     }
@@ -98,7 +99,10 @@ class MainActivity : AppCompatActivity() {
         return if (ActivityCompat.checkSelfPermission(
                 this,
                 Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(
+            ) != PackageManager.PERMISSION_GRANTED || if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_BACKGROUND_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED else ActivityCompat.checkSelfPermission(
                 this,
                 Manifest.permission.ACCESS_COARSE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
@@ -113,7 +117,7 @@ class MainActivity : AppCompatActivity() {
             this,
             arrayOf(
                 Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.ACCESS_COARSE_LOCATION,
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) Manifest.permission.ACCESS_BACKGROUND_LOCATION else Manifest.permission.ACCESS_COARSE_LOCATION,
             ),
             REQUEST_LOCATION_PERMISSION
         )

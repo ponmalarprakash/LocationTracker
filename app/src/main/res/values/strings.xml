@@ -7,4 +7,5 @@
     <string name="currentUserId">"Current UserId is : "</string>
     <string name="enterId">Kindly enter UserId</string>
     <string name="permissionDenied">Permission Denied</string>
+    <string name="app_running">App is using location services</string>
 </resources>
