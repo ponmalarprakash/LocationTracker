@@ -39,7 +39,6 @@ object InternetSpeedChecker {
             mDownloadSpeedOutput = Integer.toString(mDownloadSpeedWithDecimals.toInt())
         }
 
-        println("mDownloadSpeedOutput$mDownloadSpeedOutput")
         return mDownloadSpeedOutput
     }
 }

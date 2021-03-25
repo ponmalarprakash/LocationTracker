@@ -51,9 +51,9 @@ object DeviceUtils {
                 getAppVersionName(),
                 CommonData.getCurrentTime(),
                 "1",
-                deviceToken = SessionSave.getSession(CommonData.DEVICE_TOKEN, context),
-                deviceId = getDeviceID(context),
-                internetSpeed = InternetSpeedChecker.getDownloadSpeed(),
+                SessionSave.getSession(CommonData.DEVICE_TOKEN, context),
+                getDeviceID(context),
+                /*InternetSpeedChecker.getDownloadSpeed()*/"0.0",
                 getLatitude(location),
                 getLongitude(location),
                 getAltitudeValue(location),
@@ -61,12 +61,13 @@ object DeviceUtils {
                 getSpeed(location),
                 getAccuracy(location),
                 SessionSave.getUserId(CommonData.USER_ID, context).toInt(),
-                SessionSave.getTripId(CommonData.TRIP_ID, context).toString(),
+                SessionSave.getTripId(CommonData.TRIP_ID, context),
                 getTravelDetail(context)
             )
             return deviceInfo
-        } catch (E: Exception) {
-            return DeviceInfo(E.localizedMessage)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return DeviceInfo(e.localizedMessage)
         }
     }
 
@@ -79,51 +80,33 @@ object DeviceUtils {
     }
 
     private fun getLatitude(location: Location?): Double {
-        return if (location != null) {
-            DecimalFormat("##.###").format(location.latitude).toDouble()
-        } else {
-            0.0
-        }
+        return /*DecimalFormat("##.###").format(location.latitude).toDouble()*/location?.latitude
+            ?: 0.0
     }
 
     private fun getLongitude(location: Location?): Double {
-        return if (location != null) {
-            DecimalFormat("##.###").format(location.longitude).toDouble()
-        } else {
-            0.0
-        }
+        return /*DecimalFormat("##.###").format(location.longitude).toDouble()*/location?.longitude
+            ?: 0.0
     }
 
     private fun getAltitudeValue(location: Location?): Double {
-        return if (location != null) {
-            DecimalFormat("##.###").format(location.altitude).toDouble()
-        } else {
-            0.0
-        }
+        return /*DecimalFormat("##.###").format(location.altitude).toDouble()*/ location?.altitude
+            ?: 0.0
     }
 
-    private fun getBearing(location: Location?): Int {
-        return if (location != null) {
-            DecimalFormat("##.###").format(location.bearing).toInt()
-        } else {
-            0
-        }
+    private fun getBearing(location: Location?): Double {
+        return /*DecimalFormat("##.###").format(location.bearing).toDouble()*/ location?.bearing?.toDouble()
+            ?: 0.0
     }
 
     private fun getSpeed(location: Location?): String {
-        return if (location != null) {
-            DecimalFormat("##.###").format(location.speed).toString()
-        } else {
-            "0.0"
-        }
+        return /*DecimalFormat("##.###").format(location.speed).toString()*/ location?.speed?.toString()
+            ?: "0.0"
     }
 
     private fun getAccuracy(location: Location?): Double {
-        return if (location != null) {
-            DecimalFormat("##.###").format(location.accuracy).toDouble()
-        } else {
-            0.0
-        }
+        return /*DecimalFormat("##.###").format(location.accuracy).toDouble()*/location?.accuracy?.toDouble()
+            ?: 0.0
     }
 
 

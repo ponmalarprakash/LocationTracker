@@ -153,7 +153,6 @@ public class SessionSave {
             editor.putString(key, value);
             editor.commit();
         }
-        return;
     }
 
     public static String getTripId(String key, Context context) {
@@ -170,7 +169,6 @@ public class SessionSave {
             editor.putString(key, value);
             editor.commit();
         }
-        return;
     }
 
     public static String getTravelStatus(String key, Context context) {
