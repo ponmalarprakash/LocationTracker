@@ -60,11 +60,21 @@ object DeviceUtils {
                 getBearing(location),
                 getSpeed(location),
                 getAccuracy(location),
-                SessionSave.getSession(CommonData.USER_ID, context).toInt()
+                SessionSave.getUserId(CommonData.USER_ID, context).toInt(),
+                SessionSave.getTripId(CommonData.TRIP_ID, context).toString(),
+                getTravelDetail(context)
             )
             return deviceInfo
         } catch (E: Exception) {
             return DeviceInfo(E.localizedMessage)
+        }
+    }
+
+    private fun getTravelDetail(context: Context): String {
+        return if (SessionSave.getTravelStatus(CommonData.TRAVEL_STATUS, context).isNullOrEmpty()) {
+            "F"
+        } else {
+            SessionSave.getTravelStatus(CommonData.TRAVEL_STATUS, context).toString()
         }
     }
 

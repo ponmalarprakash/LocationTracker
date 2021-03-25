@@ -27,5 +27,7 @@ data class DeviceInfo(
     val bearing: Int = 0,
     val speed: String = "",
     val accuracy: Double = 0.0,
-    val userId: Int= 0
+    val userId: Int = 0,
+    val trip_id: String = "",
+    val travel_status: String = ""
 )

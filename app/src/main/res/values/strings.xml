@@ -12,5 +12,14 @@
     <string name="shiftOut">Shift Out</string>
     <string name="logIn">Log In</string>
     <string name="logOut">Log Out</string>
+    <string name="off">Off</string>
+    <string name="on">On</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="something_went_wrong">Something went wrong!</string>
+    <string name="error">Unknown error</string>
+    <string name="tripId">Trip Id</string>
+    <string name="travel_status">Travel Status</string>
+    <string name="login"><![CDATA[Please Enter UserId & Continue]]></string>
 
 </resources>

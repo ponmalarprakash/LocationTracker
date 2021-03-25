@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
     tools:context=".view.MainActivity">
 
     <EditText
@@ -11,11 +12,11 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/dp50"
-        android:layout_marginTop="@dimen/dp200"
         android:hint="@string/userId"
         android:inputType="number"
         android:maxLines="1"
         android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/start"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -25,17 +26,45 @@
         android:id="@+id/tv_user_id"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/dp200"
         android:maxLines="1"
         android:padding="@dimen/dp10"
         android:textColor="@color/black"
         android:textSize="@dimen/sp18"
         android:textStyle="bold"
         android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/start"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="123456" />
+
+    <EditText
+        android:id="@+id/et_trip_id"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/dp50"
+        android:layout_marginBottom="@dimen/dp40"
+        android:hint="@string/tripId"
+        android:inputType="number"
+        android:maxLines="1"
+        app:layout_constraintBottom_toTopOf="@id/start"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_user_id"
+        tools:ignore="Autofill" />
+
+    <EditText
+        android:id="@+id/et_travel_status"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/dp50"
+        android:hint="@string/travel_status"
+        android:inputType="text"
+        android:maxLines="1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/et_trip_id"
+        tools:ignore="Autofill" />
 
     <Button
         android:id="@+id/start"
@@ -62,29 +91,29 @@
         app:layout_constraintStart_toStartOf="@id/start"
         app:layout_constraintTop_toBottomOf="@id/start" />
 
-    <Button
-        android:id="@+id/btnShiftInOut"
-        android:layout_width="0dp"
+    <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/shiftSwitch"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/dp10"
-        android:paddingVertical="@dimen/dp10"
-        android:text="@string/shiftIn"
-        android:textAllCaps="false"
+        android:layout_gravity="center"
+        android:checked="false"
+        android:text="@string/shiftOut"
+        android:textOff="@string/off"
+        android:textOn="@string/on"
         app:layout_constraintEnd_toEndOf="@id/stop"
         app:layout_constraintStart_toStartOf="@id/stop"
         app:layout_constraintTop_toBottomOf="@id/stop" />
 
-    <Button
-        android:id="@+id/btnLogInOut"
-        android:layout_width="0dp"
+    <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/LogInOutSwitch"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/dp10"
-        android:paddingVertical="@dimen/dp10"
-        android:text="@string/logIn"
-        android:textAllCaps="false"
-        android:visibility="visible"
+        android:layout_gravity="center"
+        android:textOff="@string/off"
+        android:textOn="@string/on"
         app:layout_constraintEnd_toEndOf="@id/stop"
         app:layout_constraintStart_toStartOf="@id/stop"
-        app:layout_constraintTop_toBottomOf="@id/btnShiftInOut" />
+        app:layout_constraintTop_toBottomOf="@id/shiftSwitch" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
