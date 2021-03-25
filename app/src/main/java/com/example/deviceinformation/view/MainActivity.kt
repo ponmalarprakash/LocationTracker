@@ -55,6 +55,7 @@ class MainActivity : AppCompatActivity(), DialogOnClickInterface {
         etTripId = findViewById(R.id.et_trip_id)
         etTravelStatus = findViewById(R.id.et_travel_status)
         checkSession()
+
     }
 
     private fun checkSession() {
@@ -80,7 +81,7 @@ class MainActivity : AppCompatActivity(), DialogOnClickInterface {
                 .isEmpty() || SessionSave.getShiftStatus(
                 CommonData.SHIFT_STATUS,
                 this
-            ) == "out"
+            ) == "OUT"
         ) {
             shiftSwitch.isChecked = false
             shiftSwitch.text = getString(R.string.shiftOut)
@@ -110,20 +111,34 @@ class MainActivity : AppCompatActivity(), DialogOnClickInterface {
 
     override fun onResume() {
         super.onResume()
-
+        checkShiftSwitch()
+        checkLogInSwitch()
         btnStartService.setOnClickListener {
-            if (etUserId.visibility == View.VISIBLE) {
+            if (SessionSave.getUserId(CommonData.USER_ID, this).isNullOrEmpty()) {
                 val userId = etUserId.text.toString()
                 if (userId.isEmpty()) {
                     showToast(getString(R.string.enterId))
                 } else {
                     SessionSave.saveUserId(CommonData.USER_ID, userId, this)
-                    validateTripIdTravelStatus()
-                    startForegroundServices()
+                    if (shiftSwitch.isChecked && logInOutSwitch.isChecked
+                    ) {
+                        validateTripIdTravelStatus()
+                        startForegroundServices()
+
+                    } else {
+                        showToast(getString(R.string.changeShift))
+                        stopForegroundServices()
+                    }
                 }
             } else {
-                validateTripIdTravelStatus()
-                startForegroundServices()
+                if (shiftSwitch.isChecked && logInOutSwitch.isChecked
+                ) {
+                    validateTripIdTravelStatus()
+                    startForegroundServices()
+                } else {
+                    showToast(getString(R.string.changeShift))
+                    stopForegroundServices()
+                }
             }
         }
 
@@ -131,24 +146,19 @@ class MainActivity : AppCompatActivity(), DialogOnClickInterface {
             stopForegroundServices()
         }
 
-        checkShiftSwitch()
         shiftSwitch.setOnClickListener {
             if (SessionSave.getShiftStatus(CommonData.SHIFT_STATUS, this)
                     .isEmpty() || SessionSave.getShiftStatus(
                     CommonData.SHIFT_STATUS,
                     this
-                ) == "out"
+                ) == "OUT"
             ) {
                 if (SessionSave.getUserId(CommonData.USER_ID, this).isEmpty()) {
                     showToast(getString(R.string.login))
                     shiftSwitch.isChecked = false
                     shiftSwitch.text = getString(R.string.shiftOut)
+                    stopForegroundServices()
                 } else {
-                    SessionSave.saveShiftStatus(
-                        CommonData.SHIFT_STATUS,
-                        "in",
-                        this
-                    )
                     shiftSwitch.isChecked = true
                     shiftSwitch.text = getString(R.string.shiftIn)
                     callInsertEventApi("SI", 1)
@@ -161,17 +171,16 @@ class MainActivity : AppCompatActivity(), DialogOnClickInterface {
                 } else {
                     SessionSave.saveShiftStatus(
                         CommonData.SHIFT_STATUS,
-                        "out",
+                        "OUT",
                         this
                     )
                     shiftSwitch.isChecked = false
                     shiftSwitch.text = getString(R.string.shiftOut)
-                    callInsertEventApi("SO", 0)
+                    callInsertEventApi("SO", 1)
                 }
             }
         }
 
-        checkLogInSwitch()
         logInOutSwitch.setOnClickListener {
             if (SessionSave.getUserId(CommonData.USER_ID, this).isEmpty()) {  //logout - login
                 val userId = etUserId.text.toString()
@@ -185,13 +194,12 @@ class MainActivity : AppCompatActivity(), DialogOnClickInterface {
                     showUserId()
                     logInOutSwitch.isChecked = true
                     logInOutSwitch.text = getString(R.string.logIn)
-                    callInsertEventApi("LI", 1)
+                    callInsertEventApi("LI", 2)
                 }
             } else {  //login - logout
-                showEditUserId()
                 logInOutSwitch.isChecked = false
                 logInOutSwitch.text = getString(R.string.logOut)
-                callInsertEventApi("LO", 0)
+                callInsertEventApi("LO", 2)
             }
         }
     }
@@ -216,10 +224,16 @@ class MainActivity : AppCompatActivity(), DialogOnClickInterface {
             ) {
                 dismissProgressDialog()
                 if (response.isSuccessful && response.body() != null) {
-                    if (status == 0) {
-                        stopServices(response.body() as EventResponse, eventType)
+                    if (status == 1) {
+                        handleEventResponseForShiftStatus(
+                            response.body() as EventResponse,
+                            eventType
+                        )
                     } else {
-                        handleEventResponse(response.body() as EventResponse)
+                        handleEventResponseForLogInStatus(
+                            response.body() as EventResponse,
+                            eventType
+                        )
                     }
                 } else {
                     dismissAlertDialog()
@@ -241,9 +255,30 @@ class MainActivity : AppCompatActivity(), DialogOnClickInterface {
         })
     }
 
-    private fun stopServices(eventResponse: EventResponse, eventType: String) {
+    private fun handleEventResponseForShiftStatus(eventResponse: EventResponse, eventType: String) {
+        showToast(eventResponse.message)
         if (eventResponse.status == 1) {
-            if (eventType == "LI") {
+            if (eventType == "SO") {
+                SessionSave.saveShiftStatus(
+                    CommonData.SHIFT_STATUS,
+                    "OUT",
+                    this@MainActivity
+                )
+                stopForegroundServices()
+            } else {
+                SessionSave.saveShiftStatus(
+                    CommonData.SHIFT_STATUS,
+                    "IN",
+                    this@MainActivity
+                )
+            }
+        }
+    }
+
+    private fun handleEventResponseForLogInStatus(eventResponse: EventResponse, eventType: String) {
+        showToast(eventResponse.message)
+        if (eventResponse.status == 1) {
+            if (eventType == "LO") {
                 SessionSave.saveUserId(CommonData.USER_ID, "", this@MainActivity)
                 SessionSave.saveTripId(CommonData.TRIP_ID, "", this@MainActivity)
                 SessionSave.saveTravelStatus(
@@ -252,94 +287,10 @@ class MainActivity : AppCompatActivity(), DialogOnClickInterface {
                     this@MainActivity
                 )
                 stopForegroundServices()
-            } else {
-                stopForegroundServices()
+                showEditUserId()
             }
         }
     }
-
-    private fun handleEventResponse(eventResponse: EventResponse) {
-        if (eventResponse.status == 1) {
-            Log.d("EventStatus", eventResponse.message)
-        }
-    }
-
-    /*private fun callShiftStatusApi(value: String) {
-        showProgressDialog(context = this)
-        ServiceGenerator.apiService.getShiftStatus(
-            ShiftStatusRequest(
-                SessionSave.getTripId(CommonData.TRIP_ID, this).toString(),
-                SessionSave.getTravelStatus(CommonData.TRAVEL_STATUS, this).toString()
-            )
-        ).enqueue(object : Callback<ShiftStatusResponse> {
-            override fun onResponse(
-                call: Call<ShiftStatusResponse>,
-                response: Response<ShiftStatusResponse>
-            ) {
-                dismissProgressDialog()
-                if (response.isSuccessful && response.body() != null) {
-                    handleShiftResponse(response.body() as ShiftStatusResponse)
-                } else {
-                    dismissAlertDialog()
-                    dialog = alertDialog(
-                        this@MainActivity,
-                        this@MainActivity,
-                        getString(R.string.something_went_wrong),
-                        isCancelable = false
-                    )
-                }
-            }
-
-            override fun onFailure(call: Call<ShiftStatusResponse>, t: Throwable) {
-                dismissProgressDialog()
-                t.printStackTrace()
-                val errorMessage = t.message ?: getString(R.string.error)
-                showToast(errorMessage)
-            }
-        })
-    }
-
-
-    private fun callLogInApi() {
-        Log.e(
-            "TripId and TravelStatus",
-            SessionSave.getTripId(CommonData.TRIP_ID, this).toString() + "," +
-                    SessionSave.getTravelStatus(CommonData.TRAVEL_STATUS, this).toString()
-        )
-        showProgressDialog(context = this)
-        ServiceGenerator.apiService.getLogInStatus(
-            LogInStatusRequest(
-                SessionSave.getTripId(CommonData.TRIP_ID, this).toString(),
-                SessionSave.getTravelStatus(CommonData.TRAVEL_STATUS, this).toString()
-            )
-        ).enqueue(object : Callback<LogInStatusResponse> {
-            override fun onResponse(
-                call: Call<LogInStatusResponse>,
-                response: Response<LogInStatusResponse>
-            ) {
-                dismissProgressDialog()
-                if (response.isSuccessful && response.body() != null) {
-                    handleLogInResponse(response.body() as LogInStatusResponse)
-                } else {
-                    dismissAlertDialog()
-                    dialog = alertDialog(
-                        this@MainActivity,
-                        this@MainActivity,
-                        getString(R.string.something_went_wrong),
-                        isCancelable = false
-                    )
-                }
-            }
-
-            override fun onFailure(call: Call<LogInStatusResponse>, t: Throwable) {
-                dismissProgressDialog()
-                t.printStackTrace()
-                val errorMessage = t.message ?: getString(R.string.error)
-                showToast(errorMessage)
-            }
-        })
-    }*/
-
 
     private fun startForegroundServices() {
         if (checkLocationPermission()) {
@@ -347,9 +298,9 @@ class MainActivity : AppCompatActivity(), DialogOnClickInterface {
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O)
                 startForegroundService(myServiceIntent)
             else startService(myServiceIntent)
-            checkLogInSwitch()
-            showUserId()
         }
+        checkLogInSwitch()
+        showUserId()
     }
 
     private fun stopForegroundServices() {
