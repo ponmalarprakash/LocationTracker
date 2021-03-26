@@ -8,6 +8,9 @@ import android.content.SharedPreferences.Editor;
 //import com.taximobility.driver.data.WayPointsData;
 //import com.google.android.gms.maps.model.LatLng;
 
+import com.example.deviceinformation.common.CommonData;
+import com.google.android.gms.common.internal.service.Common;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -112,71 +115,71 @@ public class SessionSave {
     }
 
 
-    public static void saveUserId(String key, String value, Context context) {
+    public static void saveUserId(String value, Context context) {
         if (context != null) {
             Editor editor = context.getSharedPreferences("KEY", Activity.MODE_PRIVATE).edit();
-            editor.putString(key, value);
+            editor.putString(CommonData.USER_ID, value);
             editor.commit();
         }
         return;
     }
 
-    public static String getUserId(String key, Context context) {
+    public static String getUserId(Context context) {
         if (context != null) {
             SharedPreferences prefs = context.getSharedPreferences("KEY", Activity.MODE_PRIVATE);
-            return prefs.getString(key, "");
+            return prefs.getString(CommonData.USER_ID, "");
         }
         return "";
     }
 
 
-    public static void saveShiftStatus(String key, String value, Context context) {
+    public static void saveShiftStatus(String value, Context context) {
         if (context != null) {
             Editor editor = context.getSharedPreferences("KEY", Activity.MODE_PRIVATE).edit();
-            editor.putString(key, value);
+            editor.putString(CommonData.SHIFT_STATUS, value);
             editor.commit();
         }
         return;
     }
 
-    public static String getShiftStatus(String key, Context context) {
+    public static String getShiftStatus(Context context) {
         if (context != null) {
             SharedPreferences prefs = context.getSharedPreferences("KEY", Activity.MODE_PRIVATE);
-            return prefs.getString(key, "");
+            return prefs.getString(CommonData.SHIFT_STATUS, "");
         }
         return "";
     }
 
-    public static void saveTripId(String key, String value, Context context) {
+    public static void saveTripId(String value, Context context) {
         if (context != null) {
             Editor editor = context.getSharedPreferences("KEY", Activity.MODE_PRIVATE).edit();
-            editor.putString(key, value);
+            editor.putString(CommonData.TRIP_ID, value);
             editor.commit();
         }
         return;
     }
 
-    public static String getTripId(String key, Context context) {
+    public static String getTripId(Context context) {
         if (context != null) {
             SharedPreferences prefs = context.getSharedPreferences("KEY", Activity.MODE_PRIVATE);
-            return prefs.getString(key, "");
+            return prefs.getString(CommonData.TRIP_ID, "");
         }
         return "";
     }
 
-    public static void saveTravelStatus(String key, String value, Context context) {
+    public static void saveTravelStatus(String value, Context context) {
         if (context != null) {
             Editor editor = context.getSharedPreferences("KEY", Activity.MODE_PRIVATE).edit();
-            editor.putString(key, value);
+            editor.putString(CommonData.TRAVEL_STATUS, value);
             editor.commit();
         }
         return;
     }
 
-    public static String getTravelStatus(String key, Context context) {
+    public static String getTravelStatus(Context context) {
         if (context != null) {
             SharedPreferences prefs = context.getSharedPreferences("KEY", Activity.MODE_PRIVATE);
-            return prefs.getString(key, "");
+            return prefs.getString(CommonData.TRAVEL_STATUS, "");
         }
         return "";
     }

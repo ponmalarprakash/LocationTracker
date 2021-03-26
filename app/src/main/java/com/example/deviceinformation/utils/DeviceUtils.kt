@@ -60,8 +60,8 @@ object DeviceUtils {
                 getBearing(location),
                 getSpeed(location),
                 getAccuracy(location),
-                SessionSave.getUserId(CommonData.USER_ID, context).toInt(),
-                SessionSave.getTripId(CommonData.TRIP_ID, context).toString(),
+                SessionSave.getUserId(context).toInt(),
+                SessionSave.getTripId(context).toString(),
                 getTravelDetail(context)
             )
             return deviceInfo
@@ -71,10 +71,10 @@ object DeviceUtils {
     }
 
     private fun getTravelDetail(context: Context): String {
-        return if (SessionSave.getTravelStatus(CommonData.TRAVEL_STATUS, context).isNullOrEmpty()) {
+        return if (SessionSave.getTravelStatus(context).isNullOrEmpty()) {
             "F"
         } else {
-            SessionSave.getTravelStatus(CommonData.TRAVEL_STATUS, context).toString()
+            SessionSave.getTravelStatus(context).toString()
         }
     }
 

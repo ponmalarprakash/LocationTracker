@@ -22,5 +22,7 @@
     <string name="travel_status">Travel Status</string>
     <string name="login"><![CDATA[Please Enter UserId & Continue]]></string>
     <string name="changeShift">Please change shift</string>
+    <string name="out">OUT</string>
+    <string name="IN">IN</string>
 
 </resources>

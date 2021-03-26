@@ -55,11 +55,10 @@ class MainActivity : AppCompatActivity(), DialogOnClickInterface {
         etTripId = findViewById(R.id.et_trip_id)
         etTravelStatus = findViewById(R.id.et_travel_status)
         checkSession()
-
     }
 
     private fun checkSession() {
-        if (SessionSave.getUserId(CommonData.USER_ID, this).isEmpty()) {
+        if (SessionSave.getUserId(this).isEmpty()) {
             showEditUserId()
         } else {
             showUserId()
@@ -67,7 +66,7 @@ class MainActivity : AppCompatActivity(), DialogOnClickInterface {
     }
 
     private fun checkLogInSwitch() {
-        if (SessionSave.getUserId(CommonData.USER_ID, this).isEmpty()) {
+        if (SessionSave.getUserId(this).isEmpty()) {
             logInOutSwitch.isChecked = false
             logInOutSwitch.text = getString(R.string.logOut)
         } else {
@@ -77,9 +76,8 @@ class MainActivity : AppCompatActivity(), DialogOnClickInterface {
     }
 
     private fun checkShiftSwitch() {
-        if (SessionSave.getShiftStatus(CommonData.SHIFT_STATUS, this)
+        if (SessionSave.getShiftStatus(this)
                 .isEmpty() || SessionSave.getShiftStatus(
-                CommonData.SHIFT_STATUS,
                 this
             ) == "OUT"
         ) {
@@ -103,7 +101,7 @@ class MainActivity : AppCompatActivity(), DialogOnClickInterface {
         tvUserId.visibility = View.VISIBLE
         btnStartService.text = getString(R.string.startTracker)
         tvUserId.text =
-            getString(R.string.currentUserId) + SessionSave.getUserId(CommonData.USER_ID, this)
+            getString(R.string.currentUserId) + SessionSave.getUserId(this)
         etUserId.text.clear()
         etTripId.text.clear()
         etTravelStatus.text.clear()
@@ -114,26 +112,25 @@ class MainActivity : AppCompatActivity(), DialogOnClickInterface {
         checkShiftSwitch()
         checkLogInSwitch()
         btnStartService.setOnClickListener {
-            if (SessionSave.getUserId(CommonData.USER_ID, this).isNullOrEmpty()) {
+            if (SessionSave.getUserId(this).isNullOrEmpty()) {
                 val userId = etUserId.text.toString()
                 if (userId.isEmpty()) {
                     showToast(getString(R.string.enterId))
                 } else {
-                    SessionSave.saveUserId(CommonData.USER_ID, userId, this)
+                    SessionSave.saveUserId(userId, this)
+                    validateTripIdTravelStatus()
                     if (shiftSwitch.isChecked && logInOutSwitch.isChecked
                     ) {
-                        validateTripIdTravelStatus()
                         startForegroundServices()
-
                     } else {
                         showToast(getString(R.string.changeShift))
                         stopForegroundServices()
                     }
                 }
             } else {
+                validateTripIdTravelStatus()
                 if (shiftSwitch.isChecked && logInOutSwitch.isChecked
                 ) {
-                    validateTripIdTravelStatus()
                     startForegroundServices()
                 } else {
                     showToast(getString(R.string.changeShift))
@@ -147,13 +144,12 @@ class MainActivity : AppCompatActivity(), DialogOnClickInterface {
         }
 
         shiftSwitch.setOnClickListener {
-            if (SessionSave.getShiftStatus(CommonData.SHIFT_STATUS, this)
+            if (SessionSave.getShiftStatus(this)
                     .isEmpty() || SessionSave.getShiftStatus(
-                    CommonData.SHIFT_STATUS,
                     this
                 ) == "OUT"
             ) {
-                if (SessionSave.getUserId(CommonData.USER_ID, this).isEmpty()) {
+                if (SessionSave.getUserId(this).isEmpty()) {
                     showToast(getString(R.string.login))
                     shiftSwitch.isChecked = false
                     shiftSwitch.text = getString(R.string.shiftOut)
@@ -164,16 +160,11 @@ class MainActivity : AppCompatActivity(), DialogOnClickInterface {
                     callInsertEventApi("SI", 1)
                 }
             } else {
-                if (SessionSave.getUserId(CommonData.USER_ID, this).isEmpty()) {
+                if (SessionSave.getUserId(this).isEmpty()) {
                     showToast(getString(R.string.login))
                     shiftSwitch.isChecked = true
                     shiftSwitch.text = getString(R.string.shiftIn)
                 } else {
-                    SessionSave.saveShiftStatus(
-                        CommonData.SHIFT_STATUS,
-                        "OUT",
-                        this
-                    )
                     shiftSwitch.isChecked = false
                     shiftSwitch.text = getString(R.string.shiftOut)
                     callInsertEventApi("SO", 1)
@@ -182,14 +173,14 @@ class MainActivity : AppCompatActivity(), DialogOnClickInterface {
         }
 
         logInOutSwitch.setOnClickListener {
-            if (SessionSave.getUserId(CommonData.USER_ID, this).isEmpty()) {  //logout - login
+            if (SessionSave.getUserId(this).isEmpty()) {  //logout - login
                 val userId = etUserId.text.toString()
                 if (userId.isEmpty()) {
                     showToast(getString(R.string.enterId))
                     logInOutSwitch.isChecked = false
                     logInOutSwitch.text = getString(R.string.logOut)
                 } else {
-                    SessionSave.saveUserId(CommonData.USER_ID, userId, this)
+                    SessionSave.saveUserId(userId, this)
                     validateTripIdTravelStatus()
                     showUserId()
                     logInOutSwitch.isChecked = true
@@ -207,15 +198,15 @@ class MainActivity : AppCompatActivity(), DialogOnClickInterface {
     private fun validateTripIdTravelStatus() {
         val tripId = etTripId.text.toString()
         val travelStatus = etTravelStatus.text.toString()
-        SessionSave.saveTripId(CommonData.TRIP_ID, tripId, this)
-        SessionSave.saveTravelStatus(CommonData.TRAVEL_STATUS, travelStatus, this)
+        SessionSave.saveTripId(tripId, this)
+        SessionSave.saveTravelStatus(travelStatus, this)
     }
 
     private fun callInsertEventApi(eventType: String, status: Int) {
         showProgressDialog(context = this)
         ServiceGenerator.apiService.getEventStatus(
             EventRequest(
-                SessionSave.getUserId(CommonData.USER_ID, this).toInt(), eventType
+                SessionSave.getUserId(this).toInt(), eventType
             )
         ).enqueue(object : Callback<EventResponse> {
             override fun onResponse(
@@ -260,14 +251,12 @@ class MainActivity : AppCompatActivity(), DialogOnClickInterface {
         if (eventResponse.status == 1) {
             if (eventType == "SO") {
                 SessionSave.saveShiftStatus(
-                    CommonData.SHIFT_STATUS,
                     "OUT",
                     this@MainActivity
                 )
                 stopForegroundServices()
             } else {
                 SessionSave.saveShiftStatus(
-                    CommonData.SHIFT_STATUS,
                     "IN",
                     this@MainActivity
                 )
@@ -279,10 +268,9 @@ class MainActivity : AppCompatActivity(), DialogOnClickInterface {
         showToast(eventResponse.message)
         if (eventResponse.status == 1) {
             if (eventType == "LO") {
-                SessionSave.saveUserId(CommonData.USER_ID, "", this@MainActivity)
-                SessionSave.saveTripId(CommonData.TRIP_ID, "", this@MainActivity)
+                SessionSave.saveUserId("", this@MainActivity)
+                SessionSave.saveTripId("", this@MainActivity)
                 SessionSave.saveTravelStatus(
-                    CommonData.TRAVEL_STATUS,
                     "",
                     this@MainActivity
                 )
