@@ -62,7 +62,7 @@ object DeviceUtils {
                 getAccuracy(location),
                 SessionSave.getUserId(context).toInt(),
                 SessionSave.getTripId(context),
-                getTravelDetail(context)
+                getTravelStatus(context)
             )
             return deviceInfo
         } catch (e: Exception) {
@@ -72,18 +72,20 @@ object DeviceUtils {
     }
 
     private fun deviceType(context: Context): String {
-        return if (SessionSave.getDeviceType(context).isNullOrEmpty()) {
+        val deviceType = SessionSave.getDeviceType(context)
+        return if (deviceType.isNullOrEmpty()) {
             "1"
         } else {
-            SessionSave.getDeviceType(context)
+            deviceType
         }
     }
 
-    private fun getTravelDetail(context: Context): String {
-        return if (SessionSave.getTravelStatus(context).isNullOrEmpty()) {
+    private fun getTravelStatus(context: Context): String {
+        val travelStatus = SessionSave.getTravelStatus(context)
+        return if (travelStatus.isNullOrEmpty()) {
             "F"
         } else {
-            SessionSave.getTravelStatus(context).toString()
+            travelStatus
         }
     }
 
@@ -105,8 +107,6 @@ object DeviceUtils {
         } else {
             0.0
         }
-        /* return *//*DecimalFormat("##.###").format(location.longitude).toDouble()*//*location?.longitude
-            ?: 0.0*/
     }
 
     private fun getAltitudeValue(location: Location?): Double {
@@ -116,8 +116,6 @@ object DeviceUtils {
         } else {
             0.0
         }
-        /*  return *//*DecimalFormat("##.###").format(location.altitude).toDouble()*//* location?.altitude
-            ?: 0.0*/
     }
 
     private fun getBearing(location: Location?): Double {
@@ -127,8 +125,6 @@ object DeviceUtils {
         } else {
             0.0
         }
-        /*return *//*DecimalFormat("##.###").format(location.bearing).toDouble()*//* location?.bearing?.toDouble()
-            ?: 0.0*/
     }
 
     private fun getSpeed(location: Location?): String {
@@ -138,13 +134,9 @@ object DeviceUtils {
         } else {
             "0.0"
         }
-        /*return *//*DecimalFormat("##.###").format(location.speed).toString()*//* location?.speed?.toString()
-            ?: "0.0"*/
     }
 
     private fun getAccuracy(location: Location?): Double {
-        /* return *//*DecimalFormat("##.###").format(location.accuracy).toDouble()*//*location?.accuracy?.toDouble()
-            ?: 0.0*/
         return if (location != null) {
             val df = DecimalFormat("#.###")
             df.format(location.accuracy).toDouble()

@@ -122,6 +122,8 @@ class MainActivity : AppCompatActivity(), DialogOnClickInterface {
                     SessionSave.saveUserId(userId, this)
                     validateTripIdTravelStatus()
                     checkLogInSwitch()
+                    callInsertEventApi("LI", 2)
+
                     if (shiftSwitch.isChecked && logInOutSwitch.isChecked
                     ) {
                         startForegroundServices()
@@ -132,7 +134,6 @@ class MainActivity : AppCompatActivity(), DialogOnClickInterface {
                 }
             } else {
                 validateTripIdTravelStatus()
-                checkLogInSwitch()
                 if (shiftSwitch.isChecked && logInOutSwitch.isChecked
                 ) {
                     startForegroundServices()
