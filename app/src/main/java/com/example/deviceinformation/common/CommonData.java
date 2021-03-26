@@ -37,6 +37,7 @@ public class CommonData {
     public static final String SHIFT_STATUS = "shift_status";
     public static final String TRIP_ID = "trip_id";
     public static final String TRAVEL_STATUS = "travel_status";
+    public static final String DEVICE_TYPE = "device_type";
     public static final String LOG_IN_STATUS = "log_in_status";
     public static final String SHOW_CANCEL_BUTTON = "driver_noshow_time";
     public static final String DRIVER_ARRIVED_TIME = "driver_arrived_time";

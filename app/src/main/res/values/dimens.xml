@@ -12,4 +12,6 @@
     <dimen name="dp100">100dp</dimen>
     <dimen name="dp200">200dp</dimen>
     <dimen name="dp40">40dp</dimen>
+    <dimen name="dp30">30dp</dimen>
+    <dimen name="dp60">60dp</dimen>
 </resources>

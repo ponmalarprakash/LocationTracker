@@ -41,6 +41,7 @@ class MainActivity : AppCompatActivity(), DialogOnClickInterface {
     private lateinit var logInOutSwitch: SwitchCompat
     private lateinit var etTripId: EditText
     private lateinit var etTravelStatus: EditText
+    private lateinit var etDeviceType: EditText
     private var dialog: Dialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,6 +55,7 @@ class MainActivity : AppCompatActivity(), DialogOnClickInterface {
         logInOutSwitch = findViewById(R.id.LogInOutSwitch)
         etTripId = findViewById(R.id.et_trip_id)
         etTravelStatus = findViewById(R.id.et_travel_status)
+        etDeviceType = findViewById(R.id.et_device_type)
         checkSession()
     }
 
@@ -119,6 +121,7 @@ class MainActivity : AppCompatActivity(), DialogOnClickInterface {
                 } else {
                     SessionSave.saveUserId(userId, this)
                     validateTripIdTravelStatus()
+                    checkLogInSwitch()
                     if (shiftSwitch.isChecked && logInOutSwitch.isChecked
                     ) {
                         startForegroundServices()
@@ -129,6 +132,7 @@ class MainActivity : AppCompatActivity(), DialogOnClickInterface {
                 }
             } else {
                 validateTripIdTravelStatus()
+                checkLogInSwitch()
                 if (shiftSwitch.isChecked && logInOutSwitch.isChecked
                 ) {
                     startForegroundServices()
@@ -198,8 +202,10 @@ class MainActivity : AppCompatActivity(), DialogOnClickInterface {
     private fun validateTripIdTravelStatus() {
         val tripId = etTripId.text.toString()
         val travelStatus = etTravelStatus.text.toString()
+        val deviceType = etDeviceType.text.toString()
         SessionSave.saveTripId(tripId, this)
         SessionSave.saveTravelStatus(travelStatus, this)
+        SessionSave.saveDeviceType(deviceType, this)
     }
 
     private fun callInsertEventApi(eventType: String, status: Int) {
@@ -274,6 +280,8 @@ class MainActivity : AppCompatActivity(), DialogOnClickInterface {
                     "",
                     this@MainActivity
                 )
+                SessionSave.saveDeviceType("", this@MainActivity)
+
                 stopForegroundServices()
                 showEditUserId()
             }
@@ -287,7 +295,6 @@ class MainActivity : AppCompatActivity(), DialogOnClickInterface {
                 startForegroundService(myServiceIntent)
             else startService(myServiceIntent)
         }
-        checkLogInSwitch()
         showUserId()
     }
 

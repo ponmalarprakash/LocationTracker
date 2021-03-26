@@ -43,11 +43,10 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/dp50"
-        android:layout_marginBottom="@dimen/dp40"
+        android:layout_marginTop="@dimen/dp20"
         android:hint="@string/tripId"
         android:inputType="number"
         android:maxLines="1"
-        app:layout_constraintBottom_toTopOf="@id/start"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tv_user_id"
@@ -66,18 +65,32 @@
         app:layout_constraintTop_toBottomOf="@id/et_trip_id"
         tools:ignore="Autofill" />
 
+    <EditText
+        android:id="@+id/et_device_type"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/dp50"
+        android:hint="@string/device_type"
+        android:inputType="text"
+        android:maxLines="1"
+        android:text="@string/one"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/et_travel_status"
+        tools:ignore="Autofill" />
+
     <Button
         android:id="@+id/start"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/dp100"
+        android:layout_marginTop="@dimen/dp20"
         android:paddingVertical="@dimen/dp10"
         android:text="@string/startTracker"
         android:textAllCaps="false"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/et_device_type" />
 
     <Button
         android:id="@+id/stop"
@@ -114,6 +127,4 @@
         app:layout_constraintEnd_toEndOf="@id/stop"
         app:layout_constraintStart_toStartOf="@id/stop"
         app:layout_constraintTop_toBottomOf="@id/shiftSwitch" />
-
-
 </androidx.constraintlayout.widget.ConstraintLayout>

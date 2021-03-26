@@ -24,5 +24,7 @@
     <string name="changeShift">Please change shift</string>
     <string name="out">OUT</string>
     <string name="IN">IN</string>
+    <string name="device_type">Device Type</string>
+    <string name="one">1</string>
 
 </resources>
