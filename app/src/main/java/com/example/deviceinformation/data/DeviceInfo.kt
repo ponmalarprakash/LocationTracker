@@ -24,7 +24,7 @@ data class DeviceInfo(
     val latitude: Double = 0.0,
     val longitude: Double = 0.0,
     val altitude: Double = 0.0,
-    val bearing: Int = 0,
+    val bearing: Double = 0.0,
     val speed: String = "",
     val accuracy: Double = 0.0,
     val userId: Int = 0,

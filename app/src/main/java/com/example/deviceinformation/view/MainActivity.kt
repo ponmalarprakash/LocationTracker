@@ -103,8 +103,8 @@ class MainActivity : AppCompatActivity(), DialogOnClickInterface {
         tvUserId.text =
             getString(R.string.currentUserId) + SessionSave.getUserId(this)
         etUserId.text.clear()
-        etTripId.text.clear()
-        etTravelStatus.text.clear()
+        /*etTripId.text.clear()
+        etTravelStatus.text.clear()*/
     }
 
     override fun onResume() {

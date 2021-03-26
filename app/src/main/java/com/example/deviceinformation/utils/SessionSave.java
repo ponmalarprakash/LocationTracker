@@ -156,7 +156,6 @@ public class SessionSave {
             editor.putString(CommonData.TRIP_ID, value);
             editor.commit();
         }
-        return;
     }
 
     public static String getTripId(Context context) {
@@ -173,7 +172,6 @@ public class SessionSave {
             editor.putString(CommonData.TRAVEL_STATUS, value);
             editor.commit();
         }
-        return;
     }
 
     public static String getTravelStatus(Context context) {
