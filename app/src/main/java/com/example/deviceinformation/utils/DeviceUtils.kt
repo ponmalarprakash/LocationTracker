@@ -12,8 +12,10 @@ import android.os.Build
 import android.os.Environment
 import android.os.StatFs
 import android.provider.Settings
+import android.telephony.SubscriptionInfo
 import android.telephony.SubscriptionManager
 import android.telephony.TelephonyManager
+import android.util.Log
 import androidx.core.content.ContextCompat
 import com.example.deviceinformation.BuildConfig
 import com.example.deviceinformation.common.CommonData
@@ -22,6 +24,7 @@ import com.google.android.gms.common.GoogleApiAvailability
 import java.io.File
 import java.text.DecimalFormat
 import java.util.*
+
 
 /**
  * Created on 10th October by developer at NDOT Technologies
@@ -127,13 +130,10 @@ object DeviceUtils {
         }
     }
 
-    private fun getSpeed(location: Location?): String {
-        return if (location != null) {
-            val df = DecimalFormat("#.###")
-            df.format(location.speed).toString()
-        } else {
-            "0.0"
-        }
+    private fun getSpeed(location: Location?): Int {
+        return location?.speed?.toInt() ?: 0
+        /* val df = DecimalFormat("#.###")
+         df.format(location.speed).toDouble()*/
     }
 
     private fun getAccuracy(location: Location?): Double {
@@ -221,21 +221,18 @@ object DeviceUtils {
     }
 
 
-    fun getCarriername(context: Context): String {
+    private fun getCarriername(context: Context): String {
         var subsInfoList = ArrayList<String>()
-
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
                 val subscriptionManager =
                     context.getSystemService(android.content.Context.TELEPHONY_SUBSCRIPTION_SERVICE) as SubscriptionManager
                 val permissionCheck =
                     ContextCompat.checkSelfPermission(context, Manifest.permission.READ_PHONE_STATE)
-
                 if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
                     if (isSimSupport(context)) {
                         for (subscriptionInfo in subscriptionManager.activeSubscriptionInfoList!!) {
                             subsInfoList.add(subscriptionInfo.carrierName.toString())
-
                         }
                     }
                 }
@@ -250,7 +247,6 @@ object DeviceUtils {
         } catch (e: Exception) {
         }
         return subsInfoList.toString()
-
     }
 
     private fun isSimSupport(context: Context): Boolean {
