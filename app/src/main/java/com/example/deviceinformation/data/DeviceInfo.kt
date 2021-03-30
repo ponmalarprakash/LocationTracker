@@ -29,5 +29,6 @@ data class DeviceInfo(
     val accuracy: Double = 0.0,
     val userId: Int = 0,
     val trip_id: String = "",
-    val travel_status: String = ""
+    val travel_status: String = "",
+    val gpsInfo: ArrayList<LocationData> = ArrayList(),
 )

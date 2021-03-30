@@ -19,10 +19,12 @@ import androidx.core.content.ContextCompat
 import com.example.deviceinformation.R
 import com.example.deviceinformation.`interface`.DialogOnClickInterface
 import com.example.deviceinformation.api.ServiceGenerator
+import com.example.deviceinformation.common.InternetConnection
 import com.example.deviceinformation.common.ViewProgressDialog.cancelDialog
 import com.example.deviceinformation.common.ViewProgressDialog.showProgressDialog
 import com.example.deviceinformation.data.EventRequest
 import com.example.deviceinformation.data.EventResponse
+import com.example.deviceinformation.data.LocationData
 import com.example.deviceinformation.service.LocationService
 import com.example.deviceinformation.utils.CommonAlertDialog.alertDialog
 import com.example.deviceinformation.utils.SessionSave

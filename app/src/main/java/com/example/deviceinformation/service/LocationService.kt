@@ -14,7 +14,9 @@ import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import com.example.deviceinformation.R
 import com.example.deviceinformation.api.ServiceGenerator
+import com.example.deviceinformation.common.InternetConnection
 import com.example.deviceinformation.data.DeviceInfoResponse
+import com.example.deviceinformation.data.LocationData
 import com.example.deviceinformation.utils.DeviceUtils
 import com.example.deviceinformation.view.MainActivity
 import com.google.android.gms.location.*
@@ -22,6 +24,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.util.*
+import kotlin.collections.ArrayList
 
 
 const val CHANNEL_ID = "Foreground_Service"
@@ -30,6 +33,7 @@ class LocationService : Service() {
     private val timer = Timer()
     private var location: Location? = null
     private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private val locationList: ArrayList<LocationData> by lazy { ArrayList() }
 
     override fun onCreate() {
         super.onCreate()
@@ -40,39 +44,45 @@ class LocationService : Service() {
     private fun callApi() {
         timer.schedule(object : TimerTask() {
             override fun run() {
-//                val json = Gson().toJson(
-//                    DeviceUtils.getAllInfo(
-//                        this@LocationService,
-//                        location
-//                    )
-//                )
-                ServiceGenerator.apiService.getDeviceInfo(
-                    DeviceUtils.getAllInfo(
-                        this@LocationService,
-                        location
-                    )
-                ).enqueue(object : Callback<DeviceInfoResponse> {
-                    override fun onResponse(
-                        call: Call<DeviceInfoResponse>,
-                        response: Response<DeviceInfoResponse>
-                    ) {
-                        if (response.isSuccessful && response.body() != null) {
-                            handleResponse(response.body() as DeviceInfoResponse)
-                        } else {
-                            Log.d("Response Failure", "Something went wrong!")
-                        }
+                val loader = Thread {
+                    if (InternetConnection.hasInternetConnected(this@LocationService)) {
+                        callUpdateHistoryAPI()
+                    } else {
+                        Log.d("Check Connection", "No network!")
                     }
-
-                    override fun onFailure(call: Call<DeviceInfoResponse>, t: Throwable) {
-                        t.printStackTrace()
-                    }
-                })
+                }
+                loader.start()
             }
         }, 0, 5000)
     }
 
+    private fun callUpdateHistoryAPI() {
+        ServiceGenerator.apiService.getDeviceInfo(
+            DeviceUtils.getAllInfo(
+                this@LocationService,
+                location,
+                locationList
+            )
+        ).enqueue(object : Callback<DeviceInfoResponse> {
+            override fun onResponse(
+                call: Call<DeviceInfoResponse>,
+                response: Response<DeviceInfoResponse>
+            ) {
+                if (response.isSuccessful && response.body() != null) {
+                    handleResponse(response.body() as DeviceInfoResponse)
+                } else {
+                    Log.d("Response Failure", "Something went wrong!")
+                }
+            }
+
+            override fun onFailure(call: Call<DeviceInfoResponse>, t: Throwable) {
+                t.printStackTrace()
+            }
+        })
+    }
+
     private fun handleResponse(response: DeviceInfoResponse) {
-        Log.d("msg", response.company_id.toString())
+        locationList.clear()
     }
 
     private fun getCurrentLocation() {
@@ -104,6 +114,16 @@ class LocationService : Service() {
         override fun onLocationResult(locationResult: LocationResult?) {
             val mLastLocation = locationResult?.lastLocation
             if (mLastLocation != null) {
+                locationList.add(
+                    LocationData(
+                        DeviceUtils.getLatitude(mLastLocation),
+                        DeviceUtils.getLongitude(mLastLocation),
+                        DeviceUtils.getAltitudeValue(mLastLocation),
+                        DeviceUtils.getBearing(mLastLocation),
+                        DeviceUtils.getSpeed(mLastLocation),
+                        DeviceUtils.getAccuracy(mLastLocation),
+                    )
+                )
                 location = mLastLocation
             }
         }
@@ -128,6 +148,7 @@ class LocationService : Service() {
 
     override fun onDestroy() {
         fusedLocationClient.removeLocationUpdates(mLocationCallback)
+        locationList.clear()
         timer.cancel()
         super.onDestroy()
     }
