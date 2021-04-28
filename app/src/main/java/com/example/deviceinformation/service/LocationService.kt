@@ -53,7 +53,7 @@ class LocationService : Service() {
                 }
                 loader.start()
             }
-        }, 0, 5000)
+        }, 0, 7000)
     }
 
     private fun callUpdateHistoryAPI() {
@@ -89,8 +89,8 @@ class LocationService : Service() {
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         val locationRequest = LocationRequest.create()
         locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-        locationRequest.interval = 5000
-        locationRequest.fastestInterval = 3000
+        locationRequest.interval = 2000
+        locationRequest.fastestInterval = 1000
 
         if (ActivityCompat.checkSelfPermission(
                 this,
@@ -122,6 +122,7 @@ class LocationService : Service() {
                         DeviceUtils.getBearing(mLastLocation),
                         DeviceUtils.getSpeed(mLastLocation),
                         DeviceUtils.getAccuracy(mLastLocation),
+                        DeviceUtils.getTime(mLastLocation)
                     )
                 )
                 location = mLastLocation

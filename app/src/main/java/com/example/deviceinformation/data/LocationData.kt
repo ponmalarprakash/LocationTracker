@@ -7,4 +7,5 @@ data class LocationData(
     val bearing: Double = 0.0,
     val speed: Int = 0,
     val accuracy: Double = 0.0,
+    val time: Int = 0
 )

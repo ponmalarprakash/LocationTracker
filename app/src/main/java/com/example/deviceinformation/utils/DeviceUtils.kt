@@ -18,6 +18,7 @@ import androidx.core.content.ContextCompat
 import com.example.deviceinformation.BuildConfig
 import com.example.deviceinformation.common.CommonData
 import com.example.deviceinformation.data.DeviceInfo
+import com.example.deviceinformation.data.DriverInfo
 import com.example.deviceinformation.data.LocationData
 import com.google.android.gms.common.GoogleApiAvailability
 import java.io.File
@@ -67,6 +68,19 @@ object DeviceUtils {
                 SessionSave.getTripId(context),
                 getTravelStatus(context),
                 locationList,
+                "",
+                DriverInfo(
+                    "",
+                    SessionSave.getUserId(context).toInt(),
+                    (getLatitude(location).toString() + "," + getLongitude(location).toString() + "," + getSpeed(
+                        location
+                    ).toString()),
+                    "",
+                    SessionSave.getShiftStatus(context),
+                    "",
+                    getTravelStatus(context),
+                    SessionSave.getTripId(context),
+                )
             )
             return deviceInfo
         } catch (e: Exception) {
@@ -77,7 +91,7 @@ object DeviceUtils {
 
     fun getLatitude(location: Location?): Double {
         return if (location != null) {
-            val df = DecimalFormat("#.###")
+            val df = DecimalFormat("#.#####")
             df.format(location.latitude.toDouble()).toDouble()
         } else {
             0.0
@@ -86,7 +100,7 @@ object DeviceUtils {
 
     fun getLongitude(location: Location?): Double {
         return if (location != null) {
-            val df = DecimalFormat("#.###")
+            val df = DecimalFormat("#.#####")
             df.format(location.longitude.toDouble()).toDouble()
         } else {
             0.0
@@ -95,7 +109,7 @@ object DeviceUtils {
 
     fun getAltitudeValue(location: Location?): Double {
         return if (location != null) {
-            val df = DecimalFormat("#.###")
+            val df = DecimalFormat("#.##")
             df.format(location.altitude.toDouble()).toDouble()
         } else {
             0.0
@@ -104,24 +118,29 @@ object DeviceUtils {
 
     fun getBearing(location: Location?): Double {
         return if (location != null) {
-            val df = DecimalFormat("#.###")
+            val df = DecimalFormat("#.##")
             df.format(location.bearing.toDouble()).toDouble()
         } else {
             0.0
         }
     }
 
-    fun getSpeed(location: Location?): Int {
-        return location?.speed?.toInt() ?: 0
-    }
-
     fun getAccuracy(location: Location?): Double {
         return if (location != null) {
-            val df = DecimalFormat("#.###")
+            val df = DecimalFormat("#.##")
             df.format(location.accuracy.toDouble()).toDouble()
         } else {
             0.0
         }
+    }
+
+    fun getSpeed(location: Location?): Int {
+        val speed = ((location?.speed?.times(3600))?.div(1000));
+        return speed?.toInt() ?: 0
+    }
+
+    fun getTime(location: Location?): Int {
+        return location?.time?.toInt() ?: 0
     }
 
     private fun deviceType(context: Context): String {

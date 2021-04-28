@@ -31,4 +31,6 @@ data class DeviceInfo(
     val trip_id: String = "",
     val travel_status: String = "",
     val gpsInfo: ArrayList<LocationData> = ArrayList(),
+    val driver_status: String = "",
+    val driverInfo: DriverInfo = DriverInfo("", 0, "", "", "", "", "", ""),
 )
